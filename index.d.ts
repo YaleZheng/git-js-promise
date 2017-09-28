@@ -266,7 +266,7 @@ declare module 'yale-simple-git-promise' {
          * as a standard options object for adding custom 
          * properties supported by the git log command.
          */
-		log(options?: object): Promise<void>
+		log(options?: object): Promise<ListLogSummary>
 
 		/**
          * merge from one branch to another, when supplied the 

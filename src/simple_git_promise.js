@@ -58,7 +58,7 @@ function Git(baseDir) {
 ].forEach(command => {
 	Git.prototype[command] = function(...args) {
 		return new Promise((resolve, reject) => {
-			this.client[command](...args, (response, error) => {
+			this.client[command](...args, (error, response) => {
 				if (error) {
 					reject(error)
 				} else {
