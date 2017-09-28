@@ -75,6 +75,20 @@ declare module 'yale-simple-git-promise' {
 		latest: ListLogLine
 	}
 
+	interface BranchLine {
+		current: boolean
+		name: string
+		commit: string
+		label: string
+	}
+
+	interface BranchSummary {
+		detached: boolean
+		current: string
+		all: Array<string>
+		branches: Map<string, BranchLine>
+	}
+
 	class Git {
 		constructor(baseDir?: string)
 
@@ -109,13 +123,13 @@ declare module 'yale-simple-git-promise' {
          * options can be either an array of arguments supported by the 
          * branch command or a standard options object.
          */
-		branch(options?: object): Promise<void>
+		branch(options?: object): Promise<BranchSummary>
 
 		/**
          * 	gets a list of local branches, calls handlerFn with two arguments,
          *  an error object and BranchSummary instance
          */
-		branchLocal(): Promise<void>
+		branchLocal(): Promise<BranchSummary>
 
 		/**
          * generate cat-file detail, options should be an array of strings 
@@ -209,7 +223,7 @@ declare module 'yale-simple-git-promise' {
          * get the diff for all file in the current repo compared to 
          * the last commit
          */
-		diff(): Promise<void>
+		diff(): Promise<string>
 
 		/**
          * gets a summary of the diff for files in the repo, uses the
@@ -439,7 +453,7 @@ declare module 'yale-simple-git-promise' {
          * the single value string or array of string 
          * commands you want to run
          */
-		show(): Promise<void>
+		show(): Promise<string>
 
 		/**
          * Show various types of objects, for example the 
