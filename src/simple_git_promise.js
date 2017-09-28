@@ -1,7 +1,7 @@
 const git = require('simple-git')
 
 function Git(baseDir) {
-	this.client = git(workdir)
+	this.client = git(baseDir)
 }
 
 ;[
@@ -57,20 +57,19 @@ function Git(baseDir) {
 	'exec'
 ].forEach(command => {
 	Git.prototype[command] = function(...args) {
-		new Promise((resolve, reject) => {
-			this.client[command](...args, (error, reply) => {
+		return new Promise((resolve, reject) => {
+			this.client[command](...args, (response, error) => {
 				if (error) {
 					reject(error)
 				} else {
-					resolve(reply)
+					resolve(response)
 				}
 			})
 		})
 	}
 })
-
 ;['clearQueue', 'customBinary', 'cwd', 'silent'].forEach(command => {
-	Git.prototype(command) = function(...args) {
+	Git.prototype[command] = function(...args) {
 		return this.client[command](...args)
 	}
 })

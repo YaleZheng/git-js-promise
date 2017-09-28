@@ -1,26 +1,102 @@
 declare module 'yale-simple-git-promise' {
-	export class Git {
+	interface DiffResult {
+		files: {
+			file: string
+			changes: number
+			insertions: number
+			deletions: number
+		}[]
+		insertions: number
+		deletions: number
+	}
+
+	interface FetchResult {
+		raw: string
+		remote: string | null
+		branches: {
+			name: string
+			tracking: string
+		}[]
+		tags: {
+			name: string
+			tracking: string
+		}[]
+	}
+
+	interface PullResult {
+		files: string[]
+		insertions: any
+		deletions: any
+		summary: {
+			changes: number
+			insertions: number
+			deletions: number
+		}
+	}
+
+	interface StatusResult {
+		not_added: string[]
+		conflicted: string[]
+		created: string[]
+		deleted: string[]
+		modified: string[]
+		renamed: string[]
+		files: {
+			path: string
+			index: string
+			working_dir: string
+		}[]
+		ahead: number
+		behind: number
+		current: string
+		tracking: string
+
+		/**
+         * Gets whether this represents a clean working branch.
+         */
+		isClean(): boolean
+	}
+
+	export interface TagResult {
+		all: string[]
+		latest: string
+	}
+
+	interface ListLogLine {
+		hash: string
+		date: string
+		message: string
+		author_name: string
+		author_email: string
+	}
+
+	interface ListLogSummary {
+		all: Array<ListLogLine>
+		latest: ListLogLine
+	}
+
+	class Git {
 		constructor(baseDir?: string)
 
 		/**
          * adds one or more files to be under source control
          */
-		add(...files: Array<string>): Promise<string>
+		add(...files: Array<string>): Promise<void>
 
 		/**
          * adds an annotated tag to the head of the current branch
          */
-		addAnnotatedTag(tagName: string, tagMessage: string): Promise<string>
+		addAnnotatedTag(tagName: string, tagMessage: string): Promise<void>
 
 		/**
          * 	add a local configuration property
          */
-		addConfig(key: string, value: string): Promise<string>
+		addConfig(key: string, value: string): Promise<void>
 
 		/**
          * adds a new named remote to be tracked as name at the path repo
          */
-		addRemote(name: string, repo: string): Promise<string>
+		addRemote(name: string, repo: string): Promise<void>
 
 		/**
          * adds a lightweight tag to the head of the current branch
@@ -33,45 +109,45 @@ declare module 'yale-simple-git-promise' {
          * options can be either an array of arguments supported by the 
          * branch command or a standard options object.
          */
-		branch(options?: object): Promise<string>
+		branch(options?: object): Promise<void>
 
 		/**
          * 	gets a list of local branches, calls handlerFn with two arguments,
          *  an error object and BranchSummary instance
          */
-		branchLocal(): Promise<string>
+		branchLocal(): Promise<void>
 
 		/**
          * generate cat-file detail, options should be an array of strings 
          * as supported arguments to the cat-file command
          */
-		catFile(options?: object): Promise<string>
+		catFile(options?: object): Promise<void>
 
 		/**
          * checks out the supplied tag, revision or branch. checkoutWhat 
          * can be one or more strings to be used as parameters appended to the git checkout command.
          */
-		checkout(checkoutWhat: string): Promise<string>
+		checkout(checkoutWhat: string | Array<string>): Promise<void>
 
 		/**
          * checks out a new branch from the supplied start point
          */
-		checkoutBranch(branchName: string, startPoint: string): Promise<string>
+		checkoutBranch(branchName: string, startPoint: string): Promise<void>
 
 		/**
          * checks out a new local branch
          */
-		checkoutLocalBranch(branchName: string): Promise<string>
+		checkoutLocalBranch(branchName: string): Promise<void>
 
 		/**
          * deletes a local branch
          */
-		deleteLocalBranch(branchName: string): Promise<string>
+		deleteLocalBranch(branchName: string): Promise<void>
 
 		/**
          * convenience method to pull then checkout the latest tag
          */
-		checkoutLatestTag(): Promise<string>
+		checkoutLatestTag(): Promise<void>
 
 		/**
          * clone a remote repo at repoPath to a local directory at 
@@ -80,7 +156,7 @@ declare module 'yale-simple-git-promise' {
          * an optional array of additional arguments to include 
          * between git clone and the trailing repo local arguments
          */
-		clone(repoPath: string, localPath: string, options?: string): Promise<string>
+		clone(repoPath: string, localPath: string, options?: string): Promise<void>
 
 		/**
          * immediately clears the queue of pending tasks (note: any 
@@ -96,7 +172,7 @@ declare module 'yale-simple-git-promise' {
          * separate arguments (the git command line interface 
          * converts these to be separated by double line breaks)
          */
-		commit(message: string): Promise<string>
+		commit(message: string): Promise<void>
 
 		/**
          * commits changes on the named files with the supplied
@@ -108,7 +184,7 @@ declare module 'yale-simple-git-promise' {
          * the key from the object being passed (ie: just name), 
          * an example of setting the author is below
          */
-		commit(message: string, ...files: Array<string>, options?: object): Promise<string>
+		commit(message: string, ...files: Array<string>): Promise<void>
 
 		/**
          * sets the command to use to reference git, allows for 
@@ -127,13 +203,13 @@ declare module 'yale-simple-git-promise' {
          * get the diff of the current repo compared to the last 
          * commit with a set of options supplied as a string
          */
-		diff(options: any): Promise<string>
+		diff(options: Array<string>): Promise<string>
 
 		/**
          * get the diff for all file in the current repo compared to 
          * the last commit
          */
-		diff(): Promise<string>
+		diff(): Promise<void>
 
 		/**
          * gets a summary of the diff for files in the repo, uses the
@@ -141,13 +217,13 @@ declare module 'yale-simple-git-promise' {
          * called with a nullable error object and an instance of the 
          * DiffSummary
          */
-		diffSummary(): Promise<string>
+		diffSummary(): Promise<DiffResult>
 
 		/**
          * includes options in the call to diff --stat options and 
          * returns a DiffSummary
          */
-		diffSummary(options: any): Promise<string>
+		diffSummary(options: Array<string>): Promise<DiffResult>
 
 		/**
          * update the local working copy database with changes from 
@@ -157,25 +233,25 @@ declare module 'yale-simple-git-promise' {
          * fetch. On success, the returned data will be an instance 
          * of the FetchSummary
          */
-		fetch(options?: object): Promise<string>
+		fetch(options?: Array<string>): Promise<FetchResult>
 
 		/**
          * update the local working copy database with changes from 
          * a remote repo
          */
-		fetch(remote, branch): Promise<string>
+		fetch(remote, branch): Promise<FetchResult>
 
 		/**
          * update the local working copy database with changes from 
          * the default remote repo and branch
          */
-		fetch(): Promise<string>
+		fetch(): Promise<FetchResult>
 
 		/**
          * initialize a repository, optional bare parameter makes 
          * intialized repository bare
          */
-		init(bare: boolean): Promise<string>
+		init(bare: boolean): Promise<void>
 
 		/**
          * list commits between options.from and options.to tags 
@@ -190,51 +266,51 @@ declare module 'yale-simple-git-promise' {
          * as a standard options object for adding custom 
          * properties supported by the git log command.
          */
-		log(options?: object): Promise<string>
+		log(options?: object): Promise<void>
 
 		/**
          * merge from one branch to another, when supplied the 
          * options should be an array of additional parameters 
          * to pass into the git merge command
          */
-		mergeFromTo(from: string, to: string, options?: object): Promise<string>
+		mergeFromTo(from: string, to: string, options?: Array<string>): Promise<string>
 
 		/**
          * clone and mirror the repo to local
          */
-		mirror(repoPath: string, localPath: string): Promise<string>
+		mirror(repoPath: string, localPath: string): Promise<void>
 
 		/**
          * move all files in the from array to the to directory. On 
          * success the handlerFn will be called with a MoveSummary 
          */
-		mv(from: string, to: string): Promise<string>
+		mv(from: string, to: string): Promise<void>
 
 		/**
          * Pulls all updates from the default tracked repo
          */
-		pull(): Promise<string>
+		pull(): Promise<PullResult>
 
 		/**
          * pull all updates from the specified remote branch (eg 'origin'/'master')
          */
-		pull(remote: string, branch: string): Promise<string>
+		pull(remote: string, branch: string): Promise<PullResult>
 
 		/**
          * Pulls from named remote with any necessary options
          */
-		pull(remote: string, branch: string, options: any): Promise<string>
+		pull(remote: string, branch: string, options: Array<string>): Promise<PullResult>
 
 		/**
          * pushes to a named remote/branch, supports additional 
          * options from the git push command.
          */
-		push(remote: string, branch: string, options?: object): Promise<string>
+		push(remote: string, branch: string, options?: object): Promise<void>
 
 		/**
          * pushes tags to a named remote
          */
-		pushTags(remote: string): Promise<string>
+		pushTags(remote: string): Promise<void>
 
 		/**
          * Rebases the repo, options should be supplied as an 
@@ -242,22 +318,22 @@ declare module 'yale-simple-git-promise' {
          * rebase command, or an object of options (see 
          * details below for option formats). 
          */
-		rebase(options?: object): Promise<string>
+		rebase(options?: object): Promise<void>
 
 		/**
          * removes the named remote 
          */
-		removeRemote(name: string): Promsie<string>
+		removeRemote(name: string): Promise<void>
 
 		/**
          * removes any number of files from source control
          */
-		rm(...files: Array<string>): Promise<string>
+		rm(...files: Array<string>): Promise<void>
 
 		/**
          * removes files from source control but leaves them on disk 
          */
-		rmKeepLocal(...files: Array<string>): Promise<string>
+		rmKeepLocal(...files: Array<string>): Promise<void>
 
 		/**
          * sets whether the console should be used for logging
@@ -272,44 +348,44 @@ declare module 'yale-simple-git-promise' {
          * can be a set of arguments as supported by the git 
          * stash list command.
          */
-		stashList(options?: object): Promise<string>
+		stashList(options?: object): Promise<void>
 
 		/**
          * Stash the working directory, optional first argument 
          * can be an array of string arguments or options 
          * object to pass to the git stash command.
          */
-		stash(options?: object): Promise<string>
+		stash(options?: object): Promise<void>
 
 		/**
          * Run a git submodule command with on or more arguments passed in as an args array
          */
-		subModule(args: Array<string>): Promise<string>
+		subModule(args: Array<string>): Promise<void>
 
 		/**
          * adds a new sub module
          */
-		submoduleAdd(repo: string, path: string): Promise<string>
+		submoduleAdd(repo: string, path: string): Promise<void>
 
 		/**
          * inits sub modules, args should be an array of 
          * string arguments to pass to the git submodule 
          * init command
          */
-		submoduleInit(args?: Array<string>): Promise<string>
+		submoduleInit(args?: Array<string>): Promise<void>
 
 		/**
          * updates sub modules, args should be an array 
          * of string arguments to pass to the git submodule 
          * update command
          */
-		submoduleUpdate(args?: Array<string>): Promise<string>
+		submoduleUpdate(args?: Array<string>): Promise<void>
 
 		/**
          * Runs any supported git tag commands with arguments passed 
          * as an array of strings .
          */
-		tag(args: Array<string>): Promise<string>
+		tag(args: Array<string>): Promise<void>
 
 		/**
          * list all tags, use the optional options object to set any 
@@ -317,14 +393,14 @@ declare module 'yale-simple-git-promise' {
          * by semantic version number by default, for git versions 
          * 2.7 and above, use the --sort option to set a custom sort.
          */
-		tags(options?: object): Promise<string>
+		tags(options?: object): Promise<TagResult>
 
 		/**
          * gets a list of the named remotes, when the verbose option 
          * is supplied as true, includes the URLs and purpose of 
          * each ref
          */
-		getRemotes(verbose?: boolean): Promise<string>
+		getRemotes(verbose?: boolean): Promise<void>
 
 		/**
          * resets the repository, the optional first argument 
@@ -333,7 +409,7 @@ declare module 'yale-simple-git-promise' {
          * hard or soft, if omitted the reset will be a soft 
          * reset to head, handlerFn: (err) 
          */
-		reset(resetMode: object): Promise<string>
+		reset(resetMode: Array<string>): Promise<void>
 
 		/**
          * resets the repository, the optional first argument 
@@ -342,7 +418,7 @@ declare module 'yale-simple-git-promise' {
          * hard or soft, if omitted the reset will be a soft 
          * reset to head, handlerFn: (err) 
          */
-		reset(resetMode = 'hard' | 'soft'): Promise<string>
+		reset(resetMode: string): Promise<void>
 
 		/**
          * wraps git rev-parse. Primarily used to convert friendly 
@@ -350,12 +426,12 @@ declare module 'yale-simple-git-promise' {
          * Options should be an array of string options compatible 
          * with the git rev-parse
          */
-		revparse(options?: object): Promise<string>
+		revparse(options?: object): Promise<void>
 
 		/**
          * gets the status of the current repo
          */
-		status(): Promise<string>
+		status(): Promise<StatusResult>
 
 		/**
          * Show various types of objects, for example the 
@@ -363,7 +439,7 @@ declare module 'yale-simple-git-promise' {
          * the single value string or array of string 
          * commands you want to run
          */
-		show(): Promise<string>
+		show(): Promise<void>
 
 		/**
          * Show various types of objects, for example the 
@@ -371,12 +447,12 @@ declare module 'yale-simple-git-promise' {
          * the single value string or array of string 
          * commands you want to run
          */
-		show(options: string | Array<String>): Promise<string>
+		show(options: string | Array<String>): Promise<void>
 
 		/**
          * checks if filepath excluded by .gitignore rules
          */
-		checkIgnore(...filepath): Promise<string>
+		checkIgnore(...filepath): Promise<void>
 
 		/**
          * lists remote repositories - there are so many optional 
@@ -385,7 +461,7 @@ declare module 'yale-simple-git-promise' {
          * of strings eg: git.listRemote(['--heads', '--tags'], 
          * console.log.bind(console))
          */
-		listRemote(args?: Array<string>): Promise<string>
+		listRemote(args?: Array<string>): Promise<void>
 
 		/**
          * attaches a handler that will be called with the name 
@@ -393,13 +469,13 @@ declare module 'yale-simple-git-promise' {
          * readable streams created by the child process running 
          * that command
          */
-		outputHandler(): Promise<string>
+		outputHandler(): Promise<void>
 
 		/**
          * clean the working tree. Mode should be "n" - dry 
          * run or "f" - force
          */
-		clean(mode = 'n' | 'f', options?: object): Promise<string>
+		clean(mode: string, options?: object): Promise<void>
 
 		/**
          * Execute any arbitrary array of commands supported
@@ -408,7 +484,7 @@ declare module 'yale-simple-git-promise' {
          * something to stderr, the commmand will be treated 
          * as an error, otherwise treated as a success.
          */
-		raw(args: Array<string>): Promise<string>
+		raw(args: Array<string>): Promise<void>
 
 		/**
          * reverts one or more commits in the working copy. 
@@ -418,11 +494,11 @@ declare module 'yale-simple-git-promise' {
          * the options argument contain any options accepted 
          * by git-revert.
          */
-		revert(commit: string, options?: object): Promise<string>
+		revert(commit: string, options?: object): Promise<void>
 
 		/**
          * calls a simple function in the current step
          */
-		exec(): Promise<string>
+		exec(): Promise<void>
 	}
 }
