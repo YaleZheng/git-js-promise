@@ -14,6 +14,7 @@
 		"babel-preset-env": "^1.6.0"
 	},
 	"scripts": {
-		"build": "./node_modules/.bin/babel -d ./dist ./src"
+		"build": "./node_modules/.bin/babel -d ./dist ./src",
+		"deploy": "./node_modules/.bin/babel -d ./dist ./src && npm publish"
 	}
 }

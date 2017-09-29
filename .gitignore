@@ -4,3 +4,4 @@ tmp
 node_modules
 playground.js
 dist
+yarn-error.log

@@ -123,7 +123,7 @@ declare module 'yale-simple-git-promise' {
          * options can be either an array of arguments supported by the 
          * branch command or a standard options object.
          */
-		branch(options?: object): Promise<BranchSummary>
+		branch(options?: Array<string>): Promise<BranchSummary>
 
 		/**
          * 	gets a list of local branches, calls handlerFn with two arguments,
@@ -135,7 +135,7 @@ declare module 'yale-simple-git-promise' {
          * generate cat-file detail, options should be an array of strings 
          * as supported arguments to the cat-file command
          */
-		catFile(options?: object): Promise<void>
+		catFile(options?: Array<string>): Promise<void>
 
 		/**
          * checks out the supplied tag, revision or branch. checkoutWhat 
@@ -253,7 +253,7 @@ declare module 'yale-simple-git-promise' {
          * update the local working copy database with changes from 
          * a remote repo
          */
-		fetch(remote, branch): Promise<FetchResult>
+		fetch(remote: string, branch: string): Promise<FetchResult>
 
 		/**
          * update the local working copy database with changes from 
@@ -280,7 +280,7 @@ declare module 'yale-simple-git-promise' {
          * as a standard options object for adding custom 
          * properties supported by the git log command.
          */
-		log(options?: object): Promise<ListLogSummary>
+		log(options?: Array<string>): Promise<ListLogSummary>
 
 		/**
          * merge from one branch to another, when supplied the 
@@ -319,7 +319,7 @@ declare module 'yale-simple-git-promise' {
          * pushes to a named remote/branch, supports additional 
          * options from the git push command.
          */
-		push(remote: string, branch: string, options?: object): Promise<void>
+		push(remote: string, branch: string, options?: Array<string>): Promise<void>
 
 		/**
          * pushes tags to a named remote
@@ -332,7 +332,7 @@ declare module 'yale-simple-git-promise' {
          * rebase command, or an object of options (see 
          * details below for option formats). 
          */
-		rebase(options?: object): Promise<void>
+		rebase(options?: Array<string>): Promise<void>
 
 		/**
          * removes the named remote 
@@ -362,14 +362,14 @@ declare module 'yale-simple-git-promise' {
          * can be a set of arguments as supported by the git 
          * stash list command.
          */
-		stashList(options?: object): Promise<void>
+		stashList(options?: Array<string>): Promise<void>
 
 		/**
          * Stash the working directory, optional first argument 
          * can be an array of string arguments or options 
          * object to pass to the git stash command.
          */
-		stash(options?: object): Promise<void>
+		stash(options?: Array<string>): Promise<void>
 
 		/**
          * Run a git submodule command with on or more arguments passed in as an args array
@@ -407,7 +407,7 @@ declare module 'yale-simple-git-promise' {
          * by semantic version number by default, for git versions 
          * 2.7 and above, use the --sort option to set a custom sort.
          */
-		tags(options?: object): Promise<TagResult>
+		tags(options?: Array<string>): Promise<TagResult>
 
 		/**
          * gets a list of the named remotes, when the verbose option 
@@ -440,7 +440,7 @@ declare module 'yale-simple-git-promise' {
          * Options should be an array of string options compatible 
          * with the git rev-parse
          */
-		revparse(options?: object): Promise<void>
+		revparse(options?: Array<string>): Promise<void>
 
 		/**
          * gets the status of the current repo
@@ -489,7 +489,7 @@ declare module 'yale-simple-git-promise' {
          * clean the working tree. Mode should be "n" - dry 
          * run or "f" - force
          */
-		clean(mode: string, options?: object): Promise<void>
+		clean(mode: string, options?: Array<string>): Promise<void>
 
 		/**
          * Execute any arbitrary array of commands supported
@@ -508,7 +508,7 @@ declare module 'yale-simple-git-promise' {
          * the options argument contain any options accepted 
          * by git-revert.
          */
-		revert(commit: string, options?: object): Promise<void>
+		revert(commit: string, options?: Array<string>): Promise<void>
 
 		/**
          * calls a simple function in the current step
