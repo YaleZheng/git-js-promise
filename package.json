@@ -1,11 +1,19 @@
 {
 	"name": "yale-simple-git-promise",
-	"version": "0.1.3",
-	"main": "src/index.js",
+	"version": "0.1.4",
+	"main": "dist/index.js",
 	"repository": "git@github.com:YaleZheng/git-js-promise.git",
 	"author": "yale.zheng",
 	"license": "MIT",
 	"dependencies": {
+		"babel-polyfill": "^6.26.0",
 		"simple-git": "^1.77.0"
+	},
+	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-preset-env": "^1.6.0"
+	},
+	"scripts": {
+		"build": "./node_modules/.bin/babel -d ./dist ./src"
 	}
 }
