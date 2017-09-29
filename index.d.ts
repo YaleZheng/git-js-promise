@@ -57,7 +57,7 @@ declare module 'yale-simple-git-promise' {
 		isClean(): boolean
 	}
 
-	export interface TagResult {
+	interface TagResult {
 		all: string[]
 		latest: string
 	}
