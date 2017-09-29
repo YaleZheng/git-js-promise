@@ -1,5 +1,5 @@
 # git-js-promise
-promise version of project git-js
+promise version of project [git-js](https://github.com/steveukx/git-js)
 
 # Installation
 `npm install yale-simple-git-promise`
@@ -14,4 +14,4 @@ const logs = await client.log()
 ```
 
 # Document
-all api could be found on [git-js](https://github.com/steveukx/git-js)
+all document could be found on [git-js](https://github.com/steveukx/git-js)
